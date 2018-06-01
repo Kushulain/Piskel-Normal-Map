@@ -1,0 +1,28 @@
+<div class="toolbox-container bump-palette-container">
+  <h3 class="toolbox-title bump-palette-title">Bump tool</h3>
+  <div class="toolbox-buttons">
+    <button
+      class="button bump-palette-button create-palette-button piskel-icon-plus" data-action="add"
+      title="Create a new palette" rel="tooltip" data-placement="top" ></button>
+    <select class="button bump-palette-select"></select>
+    <button
+      class="button palettes-list-button edit-palette-button  piskel-icon-pencil" data-action="edit"
+      title="Manage this palette" rel="tooltip" data-placement="top"></button>
+  </div>
+  <div class="bump-palette-colors"></div>
+  <script type="text/template" id="bump-palette-template">
+    <div class="bump-palette-color"
+         data-color="{{color}}"
+         data-color-index="{{index}}"
+         title="{{title}}">
+      <div data-color="{{color}}" style="background:{{color}}"></div>
+    </div>
+  </script>
+
+  <script type="text/template" id="bump-palette-no-colors-partial">
+    <div class="bump-palette-no-colors">
+      No color in this palette…
+    </div>
+  </script>
+
+</div>
