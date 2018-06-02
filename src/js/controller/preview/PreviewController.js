@@ -13,6 +13,7 @@
     this.currentIndex = 0;
 
     this.onionSkinShortcut = pskl.service.keyboard.Shortcuts.MISC.ONION_SKIN;
+    this.bumpShortcut = pskl.service.keyboard.Shortcuts.MISC.BUMP_MODE;
 
     this.lastRenderTime = 0;
     this.renderFlag = true;
@@ -39,6 +40,7 @@
       }
     };
     this.toggleOnionSkinButton = document.querySelector('.preview-toggle-onion-skin');
+    this.toggleBumpButton = document.querySelector('.preview-toggle-bump');
 
     this.renderer = new pskl.rendering.frame.BackgroundImageFrameRenderer(this.container);
     this.popupPreviewController = new ns.PopupPreviewController(piskelController);
@@ -52,13 +54,20 @@
 
     var addEvent = pskl.utils.Event.addEventListener;
     addEvent(this.toggleOnionSkinButton, 'click', this.toggleOnionSkin_, this);
+    addEvent(this.toggleBumpButton, 'click', this.toggleBump_, this);
     addEvent(this.openPopupPreview, 'click', this.onOpenPopupPreviewClick_, this);
 
     var registerShortcut = pskl.app.shortcutService.registerShortcut.bind(pskl.app.shortcutService);
     registerShortcut(this.onionSkinShortcut, this.toggleOnionSkin_.bind(this));
 
+    var bumpRegisterShortcut = pskl.app.shortcutService.registerShortcut.bind(pskl.app.shortcutService);
+    registerShortcut(this.bumpShortcut, this.toggleBump_.bind(this));
+
     var onionSkinTooltip = pskl.utils.TooltipFormatter.format('Toggle onion skin', this.onionSkinShortcut);
     this.toggleOnionSkinButton.setAttribute('title', onionSkinTooltip);
+
+    var bumpModeTooltip = pskl.utils.TooltipFormatter.format('Toggle bump mode', this.bumpShortcut);
+    this.toggleBumpButton.setAttribute('title', bumpModeTooltip);
 
     for (var size in this.previewSizes) {
       if (this.previewSizes.hasOwnProperty(size)) {
@@ -83,6 +92,7 @@
 
     this.updateZoom_();
     this.updateOnionSkinPreview_();
+    this.updateBumpPreview_();
     this.selectPreviewSizeButton_();
     this.updateFPS_();
     this.updateMaxFPS_();
@@ -164,8 +174,11 @@
   };
 
   ns.PreviewController.prototype.onUserSettingsChange_ = function (evt, name, value) {
+    console.log(name + value);
     if (name == pskl.UserSettings.ONION_SKIN) {
       this.updateOnionSkinPreview_();
+    } else if (name == pskl.UserSettings.BUMP_MODE) {
+      this.updateBumpPreview_();
     } else if (name == pskl.UserSettings.MAX_FPS) {
       this.updateMaxFPS_();
     } else if (name === pskl.UserSettings.SEAMLESS_MODE) {
@@ -188,6 +201,19 @@
       this.toggleOnionSkinButton.classList.remove(enabledClassname);
     }
   };
+
+  ns.PreviewController.prototype.updateBumpPreview_ = function () {
+    var enabledClassname = 'preview-toggle-onion-skin-enabled';
+    var isEnabled = pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE);
+
+    // classList.toggle is not available on IE11.
+    if (isEnabled) {
+      this.toggleBumpButton.classList.add(enabledClassname);
+    } else {
+      this.toggleBumpButton.classList.remove(enabledClassname);
+    }
+  };
+
 
   ns.PreviewController.prototype.selectPreviewSizeButton_ = function () {
     var currentlySelected = document.querySelector('.size-button-selected');
@@ -347,5 +373,10 @@
   ns.PreviewController.prototype.toggleOnionSkin_ = function () {
     var currentValue = pskl.UserSettings.get(pskl.UserSettings.ONION_SKIN);
     pskl.UserSettings.set(pskl.UserSettings.ONION_SKIN, !currentValue);
+  };
+
+  ns.PreviewController.prototype.toggleBump_ = function () {
+    var currentValue = pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE);
+    pskl.UserSettings.set(pskl.UserSettings.BUMP_MODE, !currentValue);
   };
 })();

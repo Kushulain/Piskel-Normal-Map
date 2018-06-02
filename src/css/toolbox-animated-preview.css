@@ -54,13 +54,26 @@
 
 .range-fps {
   overflow: hidden;
-  width: 100px;
+  width: 70px;
   height : 26px;
   margin : 0;
   box-sizing: border-box;
 }
 
 .preview-toggle-onion-skin {
+  font-size: 2rem;
+  color: #aaa;
+  float: left;
+  line-height: 26px;
+  height: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-right: 1px solid #222;
+  transition: 0.2s linear;
+  cursor:pointer;
+}
+
+.preview-toggle-bump {
   font-size: 2rem;
   color: #aaa;
   float: left;

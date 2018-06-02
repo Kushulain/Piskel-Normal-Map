@@ -12,6 +12,8 @@
   ns.PalettesListController.prototype.init = function () {
     this.paletteColorTemplate_ = pskl.utils.Template.get('palette-color-template');
 
+    this.paletteListContainer_ = document.querySelector('.palettes-list-container');
+
     this.colorListContainer_ = document.querySelector('.palettes-list-colors');
     this.colorPaletteSelect_ = document.querySelector('.palettes-list-select');
 
@@ -132,6 +134,8 @@
   ns.PalettesListController.prototype.onUserSettingsChange_ = function (evt, name, value) {
     if (name == pskl.UserSettings.SELECTED_PALETTE) {
       this.updateFromUserSettings();
+    } else if (name == pskl.UserSettings.BUMP_MODE) {
+      this.paletteListContainer_.style.display= value ? 'none' : 'block';
     }
   };
 
