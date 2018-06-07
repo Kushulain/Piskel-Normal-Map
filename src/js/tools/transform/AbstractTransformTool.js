@@ -22,7 +22,7 @@
 
   ns.AbstractTransformTool.prototype.applyTool_ = function (altKey, allFrames, allLayers) {
     var currentFrameIndex = pskl.app.piskelController.getCurrentFrameIndex();
-    var layers = allLayers ? pskl.app.piskelController.getLayers() : [pskl.app.piskelController.getCurrentLayer()];
+    var layers = allLayers ? pskl.app.piskelController.getDrawingLayers() : [pskl.app.piskelController.getCurrentDrawingLayer()];
     layers.forEach(function (layer) {
       var frames = allFrames ? layer.getFrames() : [layer.getFrameAt(currentFrameIndex)];
       frames.forEach(function (frame) {

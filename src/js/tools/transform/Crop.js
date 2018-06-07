@@ -87,7 +87,7 @@
     var currentPiskel = pskl.app.piskelController.getPiskel();
 
     // Get all frames in a single array.
-    var frames = currentPiskel.getLayers().map(function (l) {
+    var frames = currentPiskel.getDrawingLayers().map(function (l) {
       return l.getFrames();
     }).reduce(function (p, n) {
       return p.concat(n);

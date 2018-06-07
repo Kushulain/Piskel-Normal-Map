@@ -11,7 +11,14 @@
 
   ns.Clone.prototype.applyTool_ = function (altKey, allFrames, allLayers) {
     var ref = pskl.app.piskelController.getCurrentFrame();
-    var layer = pskl.app.piskelController.getCurrentLayer();
+    var layer;
+
+    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)) {
+        layer = pskl.app.piskelController.getNormalLayer(pskl.app.piskelController.getCurrentLayer());
+    } else {
+        layer = pskl.app.piskelController.getCurrentLayer();
+    }
+
     layer.getFrames().forEach(function (frame) {
       if (frame !==  ref) {
         frame.setPixels(ref.getPixels());

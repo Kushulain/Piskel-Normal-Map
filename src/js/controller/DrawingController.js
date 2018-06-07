@@ -413,22 +413,42 @@
   };
 
   ns.DrawingController.prototype.render = function () {
-    var currentFrame = this.piskelController.getCurrentFrame();
-    if (!currentFrame.isSameSize(this.overlayFrame)) {
-      this.overlayFrame = pskl.model.Frame.createEmptyFromFrame(currentFrame);
+    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)) {
+      var currentFrame = this.piskelController.getCurrentNormalFrame();
+
+      if (!currentFrame.isSameSize(this.overlayFrame)) {
+        this.overlayFrame = pskl.model.Frame.createEmptyFromFrame(currentFrame);
+      }
+
+      if (pskl.UserSettings.get(pskl.UserSettings.LAYER_PREVIEW)) {
+        this.layersRenderer.render();
+      }
+
+      this.renderer.render(currentFrame);
+      // this.renderer.normalRender(currentFrame);
+      this.overlayRenderer.render(this.overlayFrame);
+    } else {
+      var currentFrame = this.piskelController.getCurrentFrame();
+
+      if (!currentFrame.isSameSize(this.overlayFrame)) {
+        this.overlayFrame = pskl.model.Frame.createEmptyFromFrame(currentFrame);
+      }
+
+      if (pskl.UserSettings.get(pskl.UserSettings.ONION_SKIN)) {
+        this.onionSkinRenderer.render();
+      }
+
+      if (pskl.UserSettings.get(pskl.UserSettings.LAYER_PREVIEW)) {
+        this.layersRenderer.render();
+      }
+
+      this.renderer.render(currentFrame);
+      this.overlayRenderer.render(this.overlayFrame);
     }
 
-    if (pskl.UserSettings.get(pskl.UserSettings.ONION_SKIN)) {
-      this.onionSkinRenderer.render();
-    }
-
-    if (pskl.UserSettings.get(pskl.UserSettings.LAYER_PREVIEW)) {
-      this.layersRenderer.render();
-    }
-
-    this.renderer.render(currentFrame);
-    this.overlayRenderer.render(this.overlayFrame);
   };
+
+
 
   /**
    * @private

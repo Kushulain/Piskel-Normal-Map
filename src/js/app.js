@@ -31,9 +31,14 @@
 
       var layer = new pskl.model.Layer('Layer 1');
       var frame = new pskl.model.Frame(size.width, size.height);
-
       layer.addFrame(frame);
+
+      var layerNormal = new pskl.model.Layer('Normal 1');
+      var frameNormal = new pskl.model.Frame(size.width, size.height,true);
+      layerNormal.addFrame(frameNormal);
+
       piskel.addLayer(layer);
+      piskel.linkLayer(layer,layerNormal);
 
       this.corePiskelController = new pskl.controller.piskel.PiskelController(piskel);
       this.corePiskelController.init();
@@ -262,4 +267,3 @@
     }
   };
 })();
-

@@ -11,6 +11,8 @@
   ns.Piskel = function (width, height, fps, descriptor) {
     if (width && height && descriptor) {
       this.layers = [];
+      // A Map is used to store additional layers, takes a standard Layer as Key to find the corresponding one.
+      this.normalLayersMap = new Map();
       this.width = width;
       this.height = height;
       this.descriptor = descriptor;
@@ -41,6 +43,14 @@
 
   ns.Piskel.prototype.getLayers = function () {
     return this.layers;
+  };
+
+  ns.Piskel.prototype.getNormalLayers = function () {
+    var allLayer = [];
+    for (var [key, value] of this.normalLayersMap) {
+      allLayer.push(value);
+    }
+    return allLayer;
   };
 
   ns.Piskel.prototype.getHeight = function () {
@@ -108,12 +118,17 @@
   ns.Piskel.prototype.removeLayer = function (layer) {
     var index = this.layers.indexOf(layer);
     if (index != -1) {
-      this.layers.splice(index, 1);
+      removeLayerAt(index);
     }
   };
 
   ns.Piskel.prototype.removeLayerAt = function (index) {
+    normalLayersMap.delete(this.getLayerAt(index));
     this.layers.splice(index, 1);
+  };
+
+  ns.Piskel.prototype.linkLayer = function (layer, normalLayer) {
+    this.normalLayersMap.set(layer, normalLayer);
   };
 
   ns.Piskel.prototype.getDescriptor = function () {

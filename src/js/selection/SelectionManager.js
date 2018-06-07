@@ -66,6 +66,11 @@
   ns.SelectionManager.prototype.erase = function () {
     var pixels = this.currentSelection.pixels;
     var currentFrame = this.piskelController.getCurrentFrame();
+    var color = Constants.TRANSPARENT_COLOR;
+    if (currentFrame.isNormal) {
+      color = Constants.NORMAL_TRANSPARENT_COLOR;
+    }
+
     for (var i = 0, l = pixels.length ; i < l ; i++) {
       currentFrame.setPixel(pixels[i].col, pixels[i].row, Constants.TRANSPARENT_COLOR);
     }

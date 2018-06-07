@@ -55,8 +55,24 @@
     return this.piskel.getLayers();
   };
 
+  ns.PiskelController.prototype.getDrawingLayers = function () {
+    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)){
+      return this.piskel.getNormalLayers();
+    } else {
+      return this.piskel.getLayers();
+    }
+  };
+
   ns.PiskelController.prototype.getCurrentLayer = function () {
     return this.getLayerAt(this.currentLayerIndex);
+  };
+
+  ns.PiskelController.prototype.getCurrentDrawingLayer = function () {
+    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)){
+      return this.getNormalLayer(this.getLayerAt(this.currentLayerIndex));
+    } else {
+      return this.getLayerAt(this.currentLayerIndex);
+    }
   };
 
   ns.PiskelController.prototype.getLayerAt = function (index) {
@@ -79,8 +95,25 @@
   };
 
   ns.PiskelController.prototype.getCurrentFrame = function () {
+    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)) {
+      return this.getCurrentNormalFrame();
+    } else {
+      return this.getCurrentStandardFrame();
+    }
+  };
+
+  ns.PiskelController.prototype.getCurrentStandardFrame = function () {
     var layer = this.getCurrentLayer();
     return layer.getFrameAt(this.currentFrameIndex);
+  };
+
+  ns.PiskelController.prototype.getCurrentNormalFrame = function () {
+    var layer = this.getNormalLayer(this.getCurrentLayer());
+    return layer.getFrameAt(this.currentFrameIndex);
+  };
+
+  ns.PiskelController.prototype.getNormalLayer = function (layer) {
+    return this.piskel.normalLayersMap.get(layer);
   };
 
   ns.PiskelController.prototype.getCurrentLayerIndex = function () {
@@ -120,6 +153,7 @@
   ns.PiskelController.prototype.addFrameAt = function (index) {
     this.getLayers().forEach(function (l) {
       l.addFrameAt(this.createEmptyFrame_(), index);
+      this.getNormalLayer(l).addFrameAt(this.createEmptyNormalFrame_(), index);
     }.bind(this));
 
     this.setCurrentFrameIndex(index);
@@ -131,10 +165,17 @@
     return new pskl.model.Frame(w, h);
   };
 
+  ns.PiskelController.prototype.createEmptyNormalFrame_ = function () {
+    var w = this.piskel.getWidth();
+    var h = this.piskel.getHeight();
+    return new pskl.model.Frame(w, h, true);
+  };
+
   ns.PiskelController.prototype.removeFrameAt = function (index) {
     this.getLayers().forEach(function (l) {
       l.removeFrameAt(index);
-    });
+      this.getNormalLayer(l).removeFrameAt(index);
+    }.bind(this));
     // Current frame index is impacted if the removed frame was before the current frame
     if (this.currentFrameIndex >= index && this.currentFrameIndex > 0) {
       this.setCurrentFrameIndex(this.currentFrameIndex - 1);
@@ -148,14 +189,16 @@
   ns.PiskelController.prototype.duplicateFrameAt = function (index) {
     this.getLayers().forEach(function (l) {
       l.duplicateFrameAt(index);
-    });
+      this.getNormalLayer(l).duplicateFrameAt(index);
+    }.bind(this));
     this.setCurrentFrameIndex(index + 1);
   };
 
   ns.PiskelController.prototype.moveFrame = function (fromIndex, toIndex) {
     this.getLayers().forEach(function (l) {
       l.moveFrame(fromIndex, toIndex);
-    });
+      this.getNormalLayer(l).moveFrame(fromIndex, toIndex);
+    }.bind(this));
   };
 
   ns.PiskelController.prototype.getFrameCount = function () {
@@ -216,8 +259,16 @@
   ns.PiskelController.prototype.mergeDownLayerAt = function (index) {
     var layer = this.getLayerByIndex(index);
     var downLayer = this.getLayerByIndex(index - 1);
+    var normalLayer = this.getNormalLayer(layer);
+    var normalDownLayer = this.getNormalLayer(downLayer);
+
     if (layer && downLayer) {
       var mergedLayer = pskl.utils.LayerUtils.mergeLayers(layer, downLayer);
+
+      if (normalLayer && normalDownLayer) {
+        var mergedNormalLayer = pskl.utils.LayerUtils.mergeLayers(normalLayer, normalDownLayer);
+        this.piskel.linkLayer(mergedLayer,mergedNormalLayer);
+      }
       this.removeLayerAt(index);
       this.piskel.addLayerAt(mergedLayer, index);
       this.removeLayerAt(index - 1);
@@ -237,6 +288,8 @@
   ns.PiskelController.prototype.duplicateCurrentLayer = function () {
     var layer = this.getCurrentLayer();
     var clone = pskl.utils.LayerUtils.clone(layer);
+    var cloneNormal = pskl.utils.LayerUtils.clone(this.getNormalLayer(layer));
+    this.piskel.linkLayer(clone,cloneNormal);
     var currentLayerIndex = this.getCurrentLayerIndex();
     this.piskel.addLayerAt(clone, currentLayerIndex + 1);
     this.setCurrentLayerIndex(currentLayerIndex + 1);
@@ -248,8 +301,11 @@
     }
     if (!this.hasLayerForName_(name)) {
       var layer = new pskl.model.Layer(name);
+      var normalLayer = new pskl.model.Layer(name + '_normal');
+      this.piskel.linkLayer(layer,normalLayer);
       for (var i = 0 ; i < this.getFrameCount() ; i++) {
         layer.addFrame(this.createEmptyFrame_());
+        normalLayer.addFrame(this.createEmptyNormalFrame_());
       }
       var currentLayerIndex = this.getCurrentLayerIndex();
       this.piskel.addLayerAt(layer, currentLayerIndex + 1);

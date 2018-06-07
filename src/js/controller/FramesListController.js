@@ -237,18 +237,18 @@
     previewTileRoot.setAttribute('data-tile-hash', currentFrame.getHash());
     previewTileRoot.setAttribute('data-tile-action', ACTION.SELECT);
     previewTileRoot.classList.add('preview-tile');
-    if (this.piskelController.getCurrentFrame() == currentFrame) {
+    if (this.piskelController.getCurrentStandardFrame() == currentFrame) {
       previewTileRoot.classList.add('selected');
     }
 
     var canvasContainer = document.createElement('div');
     canvasContainer.classList.add('canvas-container', pskl.UserSettings.get(pskl.UserSettings.CANVAS_BACKGROUND));
 
-    var height = this.zoom * this.piskelController.getCurrentFrame().getHeight();
+    var height = this.zoom * this.piskelController.getCurrentStandardFrame().getHeight();
     var horizontalMargin = (Constants.PREVIEW_FILM_SIZE - height) / 2;
     canvasContainer.style.marginTop = horizontalMargin + 'px';
 
-    var width = this.zoom * this.piskelController.getCurrentFrame().getWidth();
+    var width = this.zoom * this.piskelController.getCurrentStandardFrame().getWidth();
     var verticalMargin = (Constants.PREVIEW_FILM_SIZE - width) / 2;
     canvasContainer.style.marginLeft = verticalMargin + 'px';
     canvasContainer.style.marginRight = verticalMargin + 'px';
@@ -317,7 +317,7 @@
    * Calculate the preview zoom depending on the piskel size
    */
   ns.FramesListController.prototype.calculateZoom_ = function () {
-    var frame = this.piskelController.getCurrentFrame();
+    var frame = this.piskelController.getCurrentStandardFrame();
     var frameSize = Math.max(frame.getHeight(), frame.getWidth());
 
     return Constants.PREVIEW_FILM_SIZE / frameSize;

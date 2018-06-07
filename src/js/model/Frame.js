@@ -1,13 +1,18 @@
 (function () {
   var ns = $.namespace('pskl.model');
   var __idCounter = 0;
-  ns.Frame = function (width, height) {
+  ns.Frame = function (width, height, isNormal) {
     if (width && height) {
       this.width = width;
       this.height = height;
       this.id = __idCounter++;
       this.version = 0;
-      this.pixels = ns.Frame.createEmptyPixelGrid_(width, height);
+      this.isNormal = isNormal;
+      if (isNormal) {
+        this.pixels = ns.Frame.createEmptyNormalPixelGrid_(width, height);
+      } else {
+        this.pixels = ns.Frame.createEmptyPixelGrid_(width, height);
+      }
       this.stateIndex = 0;
     } else {
       throw 'Bad arguments in pskl.model.Frame constructor : ' + width + ', ' + height;
@@ -58,6 +63,21 @@
     } else {
       pixels = _emptyPixelGridCache[key] = new Uint32Array(width * height);
       var transparentColorInt = pskl.utils.colorToInt(Constants.TRANSPARENT_COLOR);
+      pixels.fill(transparentColorInt);
+    }
+
+    return new Uint32Array(pixels);
+  };
+
+  var _emptyNormalPixelGridCache = {};
+  ns.Frame.createEmptyNormalPixelGrid_ = function (width, height) {
+    var pixels;
+    var key = width + '-' + height;
+    if (_emptyNormalPixelGridCache[key]) {
+      pixels = _emptyNormalPixelGridCache[key];
+    } else {
+      pixels = _emptyNormalPixelGridCache[key] = new Uint32Array(width * height);
+      var transparentColorInt = pskl.utils.colorToInt(Constants.TRANSPARENT_NORMAL_COLOR);
       pixels.fill(transparentColorInt);
     }
 
