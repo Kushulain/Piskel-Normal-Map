@@ -1,6 +1,7 @@
 (function () {
   var ns = $.namespace('pskl.utils');
 
+  //TODO : enable merging with normals
   ns.MergeUtils = {
     /**
      * Merge two piskel instances in a new piskel instance

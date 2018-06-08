@@ -14,6 +14,11 @@
     piskelData.layers.forEach(function (serializedLayer) {
       var layer = this.deserializeLayer(serializedLayer);
       piskel.addLayer(layer);
+
+      var layerNormal = new pskl.model.Layer(layer.name + "_normal");
+      var frameNormal = new pskl.model.Frame(piskelData.width, piskelData.height, true);
+      layerNormal.addFrame(frameNormal);
+      piskel.linkLayer(layer,layerNormal);
     }.bind(this));
 
     this.callback_(piskel);

@@ -34,7 +34,15 @@
     if (layers.length > 0 && layers[0].size() > 0) {
       var sampleFrame = layers[0].getFrameAt(0);
       piskel = new pskl.model.Piskel(sampleFrame.getWidth(), sampleFrame.getHeight(), fps, descriptor);
-      layers.forEach(piskel.addLayer.bind(piskel));
+      layers.forEach(function (l) {
+        this.addLayer(l);
+
+        var layerNormal = new pskl.model.Layer(l.name + "_normal");
+        var frameNormal = new pskl.model.Frame(sampleFrame.getWidth(), sampleFrame.getHeight(),true);
+        layerNormal.addFrame(frameNormal);
+        this.linkLayer(l,layerNormal);
+      }.bind(piskel));
+      // layers.forEach(piskel.addLayer.bind(piskel));
     } else {
       throw 'Piskel.fromLayers expects array of non empty pskl.model.Layer as first argument';
     }
@@ -118,7 +126,7 @@
   ns.Piskel.prototype.removeLayer = function (layer) {
     var index = this.layers.indexOf(layer);
     if (index != -1) {
-      removeLayerAt(index);
+      this.removeLayerAt(index);
     }
   };
 

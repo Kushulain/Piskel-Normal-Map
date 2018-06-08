@@ -21,6 +21,11 @@
       var serializedLayers = piskel.getLayers().map(function (l) {
         return pskl.utils.serialization.Serializer.serializeLayer(l);
       });
+      console.log(piskel.getNormalLayers());
+      var serializedLayersNormal = piskel.getNormalLayers().map(function (l) {
+        return pskl.utils.serialization.Serializer.serializeLayer(l);
+      });
+      console.log(serializedLayersNormal);
       return JSON.stringify({
         modelVersion : Constants.MODEL_VERSION,
         piskel : {
@@ -29,7 +34,8 @@
           fps : pskl.app.piskelController.getFPS(),
           height : piskel.getHeight(),
           width : piskel.getWidth(),
-          layers : serializedLayers
+          layers : serializedLayers,
+          layersNormal : serializedLayersNormal
         }
       });
     },

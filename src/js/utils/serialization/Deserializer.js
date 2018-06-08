@@ -3,6 +3,7 @@
 
   ns.Deserializer = function (data, callback) {
     this.layersToLoad_ = 0;
+    this.layersNormalToLoad_ = 0;
     this.data_ = data;
     this.callback_ = callback;
     this.piskel_ = null;
@@ -38,10 +39,22 @@
     this.piskel_ = new pskl.model.Piskel(piskelData.width, piskelData.height, piskelData.fps, descriptor);
 
     this.layersToLoad_ = piskelData.layers.length;
-    piskelData.layers.forEach(this.deserializeLayer.bind(this));
+    this.layersNormalToLoad_ = piskelData.layersNormal.length;
+
+    piskelData.layers.forEach(this.deserializeLayerDiffuse.bind(this));
+    this.layers_ = [];
+    piskelData.layersNormal.forEach(this.deserializeLayerNormal.bind(this));
   };
 
-  ns.Deserializer.prototype.deserializeLayer = function (layerString, index) {
+  ns.Deserializer.prototype.deserializeLayerNormal = function (layerString, index) {
+    this.deserializeLayer(layerString, index, true);
+  }
+
+  ns.Deserializer.prototype.deserializeLayerDiffuse = function (layerString, index) {
+    this.deserializeLayer(layerString, index, false);
+  }
+
+  ns.Deserializer.prototype.deserializeLayer = function (layerString, index, isNormal) {
     var layerData = JSON.parse(layerString);
     var layer = new pskl.model.Layer(layerData.name);
     layer.setOpacity(layerData.opacity);
@@ -75,7 +88,11 @@
     })).then(function () {
       frames.forEach(layer.addFrame.bind(layer));
       this.layers_[index] = layer;
-      this.onLayerLoaded_();
+      if (isNormal) {
+        this.addNormalLayers();
+      } else {
+        this.addLayers();
+      }
     }.bind(this)).catch(function (error) {
       console.error('Failed to deserialize layer');
       console.error(error);
@@ -84,13 +101,27 @@
     return layer;
   };
 
-  ns.Deserializer.prototype.onLayerLoaded_ = function () {
+  ns.Deserializer.prototype.addLayers = function () {
     this.layersToLoad_ = this.layersToLoad_ - 1;
     if (this.layersToLoad_ === 0) {
       this.layers_.forEach(function (layer) {
         this.piskel_.addLayer(layer);
       }.bind(this));
-      this.callback_(this.piskel_);
+    }
+    if (this.layersNormalToLoad_ === 0 && this.layersToLoad_ === 0) {
+        this.callback_(this.piskel_);
+    }
+  };
+
+  ns.Deserializer.prototype.addNormalLayers = function () {
+    this.layersNormalToLoad_ = this.layersNormalToLoad_ - 1;
+    if (this.layersNormalToLoad_ === 0) {
+      this.layers_.forEach(function (layer, index) {
+        this.piskel_.linkLayer(this.piskel_.getLayerAt(index),layer);
+      }.bind(this));
+    }
+    if (this.layersNormalToLoad_ === 0 && this.layersToLoad_ === 0) {
+        this.callback_(this.piskel_);
     }
   };
 
