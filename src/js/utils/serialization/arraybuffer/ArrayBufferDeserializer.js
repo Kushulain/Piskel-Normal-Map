@@ -33,8 +33,8 @@
       var descriptorNameLength = arr16[4];
       var descriptorDescriptionLength = arr16[5];
 
-      // Layers meta
-      var layerCount = arr16[6];
+      // Layers color + normal meta
+      var layerCount = arr16[6] * 2;
 
       /********/
       /* DATA */
@@ -114,7 +114,12 @@
         var nlayer = new pskl.model.Layer(layer.name);
         layer.model = nlayer;
         nlayer.setOpacity(layer.opacity);
-        piskel.addLayer(nlayer);
+
+        if (i < (layerCount / 2)) {
+          piskel.addLayer(nlayer);
+        } else {
+          piskel.linkLayer(piskel.getLayerAt(i - (layerCount / 2)), nlayer);
+        }
 
         loadLayerImage.bind(this, layer, callback)();
       }

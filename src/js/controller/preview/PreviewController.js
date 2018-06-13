@@ -174,7 +174,6 @@
   };
 
   ns.PreviewController.prototype.onUserSettingsChange_ = function (evt, name, value) {
-    console.log(name + value);
     if (name == pskl.UserSettings.ONION_SKIN) {
       this.updateOnionSkinPreview_();
     } else if (name == pskl.UserSettings.BUMP_MODE) {

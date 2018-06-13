@@ -37,7 +37,7 @@
       layers.forEach(function (l) {
         this.addLayer(l);
 
-        var layerNormal = new pskl.model.Layer(l.name + "_normal");
+        var layerNormal = new pskl.model.Layer(l.name + '_normal');
         var frameNormal = new pskl.model.Frame(sampleFrame.getWidth(), sampleFrame.getHeight(),true);
         layerNormal.addFrame(frameNormal);
         this.linkLayer(l,layerNormal);
@@ -131,7 +131,7 @@
   };
 
   ns.Piskel.prototype.removeLayerAt = function (index) {
-    normalLayersMap.delete(this.getLayerAt(index));
+    this.normalLayersMap.delete(this.getLayerAt(index));
     this.layers.splice(index, 1);
   };
 

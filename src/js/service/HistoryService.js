@@ -51,6 +51,7 @@
 
     var state = {
       action : action,
+      bumpMode : pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE),
       frameIndex : action.state ? action.state.frameIndex : this.piskelController.currentFrameIndex,
       layerIndex : action.state ? action.state.layerIndex : this.piskelController.currentLayerIndex,
       fps : this.piskelController.getFPS(),
@@ -191,7 +192,15 @@
   ns.HistoryService.prototype.replayState = function (state) {
     var action = state.action;
     var type = action.type;
-    var layer = this.piskelController.getLayerAt(state.layerIndex);
+    var layer;
+    if (state.bumpMode) {
+      layer = this.piskelController.getNormalLayer(this.piskelController.getLayerAt(state.layerIndex));
+    } else {
+      layer = this.piskelController.getLayerAt(state.layerIndex);
+    }
+    if (state.bumpMode != pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)) {
+      pskl.UserSettings.set(pskl.UserSettings.BUMP_MODE, state.bumpMode);
+    }
     var frame = layer.getFrameAt(state.frameIndex);
     action.scope.replay(frame, action.replay);
   };

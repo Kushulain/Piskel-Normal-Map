@@ -56,7 +56,7 @@
   };
 
   ns.PiskelController.prototype.getDrawingLayers = function () {
-    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)){
+    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)) {
       return this.piskel.getNormalLayers();
     } else {
       return this.piskel.getLayers();
@@ -68,7 +68,7 @@
   };
 
   ns.PiskelController.prototype.getCurrentDrawingLayer = function () {
-    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)){
+    if (pskl.UserSettings.get(pskl.UserSettings.BUMP_MODE)) {
       return this.getNormalLayer(this.getLayerAt(this.currentLayerIndex));
     } else {
       return this.getLayerAt(this.currentLayerIndex);

@@ -60,7 +60,7 @@
       // Descriptor meta
       bytes += 2 * 2;
 
-      // Layers meta
+      // Layers count
       bytes += 1 * 2;
 
       /********/
@@ -82,6 +82,16 @@
         }
       }
 
+      // Layers Normal Map
+      for (var i = 0, layers = piskel.getNormalLayers(); i < layers.length; i++) {
+        bytes += 5 * 2;
+        bytes += layers[i].name.length * 2;
+        bytes += framesData[i].length;
+        if (bytes % 2 == 1) {
+          bytes++;
+        }
+      }
+
       return bytes;
     },
 
@@ -89,6 +99,7 @@
       var i;
       var j;
       var layers;
+      var layersNormal;
       var dataUri;
       var dataUriLength;
 
@@ -96,6 +107,13 @@
       var framesData = [];
       for (i = 0, layers = piskel.getLayers(); i < layers.length; i++) {
         var renderer = new pskl.rendering.FramesheetRenderer(layers[i].getFrames());
+        dataUri = renderer.renderAsCanvas().toDataURL().split(',')[1];
+        dataUriLength = dataUri.length;
+        framesData.push({uri: dataUri, length: dataUriLength});
+      }
+
+      for (i = 0, layersNormal = piskel.getNormalLayers(); i < layersNormal.length; i++) {
+        var renderer = new pskl.rendering.FramesheetRenderer(layersNormal[i].getFrames());
         dataUri = renderer.renderAsCanvas().toDataURL().split(',')[1];
         dataUriLength = dataUri.length;
         framesData.push({uri: dataUri, length: dataUriLength});
@@ -127,7 +145,7 @@
       arr16[4] = descriptorNameLength;
       arr16[5] = descriptorDescriptionLength;
 
-      // Layers meta
+      // Layers count
       arr16[6] = piskel.getLayers().length;
 
       /********/
@@ -144,8 +162,9 @@
       }
 
       // Layers
+      var layers = piskel.getLayers().concat(piskel.getNormalLayers());
       var layerStartIndex = 7 + descriptorNameLength + descriptorDescriptionLength;
-      for (i = 0, layers = piskel.getLayers(); i < layers.length; i++) {
+      for (i = 0; i < layers.length; i++) {
         var layer = layers[i];
         var frames = layer.getFrames();
 

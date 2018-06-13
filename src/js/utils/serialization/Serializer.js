@@ -21,11 +21,9 @@
       var serializedLayers = piskel.getLayers().map(function (l) {
         return pskl.utils.serialization.Serializer.serializeLayer(l);
       });
-      console.log(piskel.getNormalLayers());
       var serializedLayersNormal = piskel.getNormalLayers().map(function (l) {
         return pskl.utils.serialization.Serializer.serializeLayer(l);
       });
-      console.log(serializedLayersNormal);
       return JSON.stringify({
         modelVersion : Constants.MODEL_VERSION,
         piskel : {
